@@ -1,0 +1,85 @@
+# Environment files
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Log files
+*.log
+*.log.*
+hs_err_pid*.log
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+.idea_modules/
+
+# VS Code
+.vscode/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+*.swo
+*.swp
+*.bak
+*.tmp
+*~
+
+# Build output
+target/
+**/target/
+
+# Compiled bytecode
+*.class
+
+# Maven wrapper
+.mvn/
+mvnw
+mvnw.cmd
+.mvnw*
+!/.mvn/wrapper/maven-wrapper.jar  # keep the wrapper jar
+
+# Maven metadata
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+*.jar
+*.war
+*.ear
+
+# Optional/sensitive configs (uncomment if needed)
+# **/application-*.yml
+# **/application-*.yaml
+# **/application-*.properties
+
+**/out/
+**/tmp/
+**/.eureka/
+
+# Docker files (override, volumes, etc.)
+docker-compose.override.yml
+.docker/
+**/.dockerignore
+**/Dockerfile
+volumes/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini

@@ -1,0 +1,281 @@
+version: '3.8'
+
+services:
+  eurekaserver:
+    build:
+      context: ./eureka-server
+    container_name: eurekaserver
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-v3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  postgres-auth:
+    image: postgres:15
+    container_name: postgres-auth-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: authdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata-auth:/var/lib/postgresql/data
+    networks:
+      - microservices-v3
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-user:
+    image: postgres:15
+    container_name: postgres-user-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: userdb
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata-user:/var/lib/postgresql/data
+    networks:
+      - microservices-v3
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-department:
+    image: postgres:15
+    container_name: postgres-department-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: departmentdb
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata-department:/var/lib/postgresql/data
+    networks:
+      - microservices-v3
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-address:
+    image: postgres:15
+    container_name: postgres-address-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: addressdb
+    ports:
+      - "5436:5432"
+    volumes:
+      - pgdata-address:/var/lib/postgresql/data
+    networks:
+      - microservices-v3
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  postgres-task:
+    image: postgres:15
+    container_name: postgres-task-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: taskdb
+    ports:
+      - "5437:5432"
+    volumes:
+      - pgdata-task:/var/lib/postgresql/data
+    networks:
+      - microservices-v3
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  authservice:
+    restart: unless-stopped
+    build:
+      context: ./auth-service
+    container_name: auth-service
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+      postgres-auth:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/authdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
+
+      blackcode.app.jwtSecret: 5pAq6zRyX8bC3dV2wS7gN1mK9jF0hL4tUoP6iBvE3nG8xZaQrY7cW2fA
+      blackcode.app.jwtExpirationMs: 3600000
+      blackcode.app.jwtRefreshExpirationMs: 360000000
+
+    ports:
+      - "8081:8081"
+    networks:
+      - microservices-v3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  userservice:
+    restart: unless-stopped
+    build:
+      context: ./user-service
+    container_name: user-service
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+      postgres-user:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-user:5432/userdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
+    ports:
+      - "8082:8082"
+    networks:
+      - microservices-v3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  departmentservice:
+    restart: unless-stopped
+    build:
+      context: ./department-service
+    container_name: department-service
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+      postgres-department:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-department:5432/departmentdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
+    ports:
+      - "8083:8083"
+    networks:
+      - microservices-v3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  addressservice:
+    restart: unless-stopped
+    build:
+      context: ./address-service
+    container_name: address-service
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+      postgres-address:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-address:5432/addressdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
+    ports:
+      - "8084:8082"
+    networks:
+      - microservices-v3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  taskservice:
+    restart: unless-stopped
+    build:
+      context: ./task-service
+    container_name: task-service
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+      postgres-task:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-task:5432/taskdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
+    ports:
+      - "8085:8083"
+    networks:
+      - microservices-v3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  apigateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+      authservice:
+        condition: service_started
+      userservice:
+        condition: service_started
+      departmentservice:
+        condition: service_started
+      addressservice:
+        condition: service_started
+      taskservice:
+        condition: service_started
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
+    ports:
+      - "8080:8080"
+    networks:
+      - microservices-v3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  microservices-v3:
+    driver: bridge
+
+volumes:
+  pgdata-auth:
+  pgdata-user:
+  pgdata-department:
+  pgdata-address:
+  pgdata-task:
