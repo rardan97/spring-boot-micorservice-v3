@@ -1,4 +1,4 @@
-# Microservices Architecture V3
+# Microservices Architecture V3 - Circuit Breaker (resilience4j & resilience4j-retry)
 
 This project implements a microservices architecture using:
 
