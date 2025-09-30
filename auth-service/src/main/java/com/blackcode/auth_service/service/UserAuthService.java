@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface UserAuthService {
 
-    JwtRes singIn(LoginReq loginRequest);
+    JwtRes signIn(LoginReq loginRequest);
 
     MessageRes signUp(SignUpReq signUpReq);
 

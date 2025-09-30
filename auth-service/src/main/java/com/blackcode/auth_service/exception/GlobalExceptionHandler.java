@@ -16,29 +16,11 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-//    @ExceptionHandler(DataNotFoundException.class)
-//    public ResponseEntity<ApiResponse<Object>> handleDataNotFound(DataNotFoundException ex) {
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                .body(ApiResponse.error(ex.getMessage(), HttpStatus.NOT_FOUND.value()));
-//    }
-
-//    @ExceptionHandler(DuplicateResourceException.class)
-//    public ResponseEntity<ApiResponse<Object>> handleDuplicateResource(DuplicateResourceException ex) {
-//        return ResponseEntity.status(HttpStatus.CONFLICT)
-//                .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT.value()));
-//    }
-
-//    @ExceptionHandler(UserNotFoundException.class)
-//    public ResponseEntity<ApiResponse<Object>> handleUserNotFound(UserNotFoundException ex) {
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                .body(ApiResponse.error(ex.getMessage(), HttpStatus.NOT_FOUND.value()));
-//    }
-
-//    @ExceptionHandler(UsernameAlreadyExistsException.class)
-//    public ResponseEntity<ApiResponse<Object>> handleUsernameExists(UsernameAlreadyExistsException ex) {
-//        return ResponseEntity.status(HttpStatus.CONFLICT)
-//                .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT.value()));
-//    }
+    @ExceptionHandler(UserServiceUnavailableException.class)
+    public ResponseEntity<ApiResponse<Object>> userServiceUnavailableException(UserServiceUnavailableException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ApiResponse.error(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE.value()));
+    }
 
     @ExceptionHandler(TokenRefreshException.class)
     public ResponseEntity<ApiResponse<Object>> handleTokenRefreshException(TokenRefreshException ex) {
@@ -88,7 +70,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleAllUncaughtException(Exception ex) {
-        ex.printStackTrace(); // bisa diganti dengan logger.error(...)
+        ex.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR.value()));
     }

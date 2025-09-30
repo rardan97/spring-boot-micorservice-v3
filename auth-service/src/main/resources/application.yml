@@ -23,6 +23,35 @@ blackcode:
     jwtRefreshExpirationMs: ${blackcode.app.jwtRefreshExpirationMs}
 
 
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+    instances:
+      userService:
+        baseConfig: default
+
+  retry:
+    instances:
+      userService:
+        maxRetryAttempts: 3
+        waitDuration: 2s
+        retryExceptions:
+          - org.springframework.web.reactive.function.client.WebClientRequestException
+          - java.util.concurrent.TimeoutException
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,circuitbreakerevents
+
 springdoc:
   api-docs:
     path: /api/auth/v3/api-docs

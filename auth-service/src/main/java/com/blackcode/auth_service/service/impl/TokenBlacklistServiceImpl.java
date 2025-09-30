@@ -1,7 +1,8 @@
-package com.blackcode.auth_service.service;
+package com.blackcode.auth_service.service.impl;
 
 import com.blackcode.auth_service.model.TokenBlacklist;
 import com.blackcode.auth_service.repository.TokenBlacklistRepository;
+import com.blackcode.auth_service.service.TokenBlacklistService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-public class TokenBlacklistServiceImpl implements TokenBlacklistService{
+public class TokenBlacklistServiceImpl implements TokenBlacklistService {
 
     private final TokenBlacklistRepository tokenBlacklistRepository;
 

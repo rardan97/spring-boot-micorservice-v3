@@ -26,8 +26,8 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<ApiResponse<?>> authenticatePetugas(@Valid @RequestBody LoginReq loginRequest) {
-        JwtRes petugasJwtRes = userAuthService.singIn(loginRequest);
+    public ResponseEntity<ApiResponse<?>> authenticateUser(@Valid @RequestBody LoginReq loginRequest) {
+        JwtRes petugasJwtRes = userAuthService.signIn(loginRequest);
         return ResponseEntity.ok(ApiResponse.success("Login Success", 200, petugasJwtRes));
     }
 
@@ -38,7 +38,7 @@ public class AuthController {
     }
 
     @PostMapping("/refreshtoken")
-    public ResponseEntity<ApiResponse<?>> refreshtoken(@Valid @RequestBody TokenRefreshReq request) {
+    public ResponseEntity<ApiResponse<?>> refreshToken(@Valid @RequestBody TokenRefreshReq request) {
         TokenRefreshRes petugasTokenRefreshRes = userAuthService.refreshToken(request);
         return ResponseEntity.ok(ApiResponse.success("Token refreshed successfully", 200, petugasTokenRefreshRes));
     }

@@ -1,10 +1,13 @@
-package com.blackcode.user_service.service;
+package com.blackcode.user_service.service.impl;
 
 import com.blackcode.user_service.dto.*;
 import com.blackcode.user_service.exception.DataNotFoundException;
 import com.blackcode.user_service.helper.TypeRefs;
 import com.blackcode.user_service.model.User;
 import com.blackcode.user_service.repository.UserRepository;
+import com.blackcode.user_service.service.AddressClientService;
+import com.blackcode.user_service.service.DepartmentClientService;
+import com.blackcode.user_service.service.UserService;
 import com.blackcode.user_service.utils.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,35 +24,30 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    private static final String DEPARTMENT_API_PATH = "/api/department/getDepartmentById/";
-
-    private static final String ADDRESS_API_PATH = "/api/address/getAddressById/";
-
     private final UserRepository userRepository;
 
-    private final WebClient departmentClient;
+    private final DepartmentClientService departmentClientService;
 
-    private final WebClient addressClient;
+    private final AddressClientService addressClientService;
 
     public UserServiceImpl(UserRepository userRepository,
-                           @Qualifier("departmentClient") WebClient departmentClient,
-                           @Qualifier("addressClient") WebClient addressClient) {
+                           DepartmentClientService departmentClientService,
+                           AddressClientService addressClientService) {
         this.userRepository = userRepository;
-        this.departmentClient = departmentClient;
-        this.addressClient = addressClient;
+        this.departmentClientService = departmentClientService;
+        this.addressClientService = addressClientService;
     }
-
 
     @Override
     public List<UserRes> getAllUser() {
         List<User> userList = userRepository.findAll();
         return userList.stream().map(user -> {
-            DepartmentDto department = fetchDepartmentById(user.getDepartmentId());
-            AddressDto address = fetchAddressById(user.getAddressId());
+            DepartmentDto department = departmentClientService.getDepartmentById(user.getDepartmentId());
+            AddressDto address = addressClientService.getAddressById(user.getAddressId());
             return mapToUserRes(user, department, address);
         }).toList();
     }
@@ -59,8 +57,8 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("User not found with ID: "+userId));
 
-        DepartmentDto department = fetchDepartmentById(user.getDepartmentId());
-        AddressDto address = fetchAddressById(user.getAddressId());
+        DepartmentDto department = departmentClientService.getDepartmentById(user.getDepartmentId());
+        AddressDto address = addressClientService.getAddressById(user.getAddressId());
         return mapToUserRes(user, department, address);
     }
 
@@ -88,8 +86,8 @@ public class UserServiceImpl implements UserService{
         user.setAddressId(userReq.getAddressId());
 
         User updateUser = userRepository.save(user);
-        DepartmentDto department = fetchDepartmentById(updateUser.getDepartmentId());
-        AddressDto address = fetchAddressById(updateUser.getAddressId());
+        DepartmentDto department = departmentClientService.getDepartmentById(updateUser.getDepartmentId());
+        AddressDto address = addressClientService.getAddressById(updateUser.getAddressId());
         return mapToUserRes(updateUser, department, address);
     }
 
@@ -102,72 +100,6 @@ public class UserServiceImpl implements UserService{
         responseData.put("deletedUserId", userId);
         responseData.put("info", "The User was removed from the database.");
         return responseData;
-    }
-
-
-    private DepartmentDto fetchDepartmentById(Long departmentId){
-        System.out.println("department fetch :"+departmentId);
-        if(departmentId == null){
-            return null;
-        }
-        String uri = DEPARTMENT_API_PATH+departmentId;
-        return fetchExternalData(
-                departmentClient,
-                uri,
-                TypeRefs.departmentDtoResponse(),
-                departmentId.toString(),
-                "Department"
-        );
-    }
-
-    private AddressDto fetchAddressById(Long addressId){
-        System.out.println("address fetch :"+addressId);
-        if(addressId == null){
-            return null;
-        }
-        String uri = ADDRESS_API_PATH + addressId;
-        System.out.println("address fetch :"+uri);
-        return fetchExternalData(
-                addressClient,
-                uri,
-                TypeRefs.addressDtoResponse(),
-                addressId.toString(),
-                "Address"
-        );
-    }
-
-    private <T> T fetchExternalData(WebClient client, String uri, ParameterizedTypeReference<ApiResponse<T>> typeRef, String logId, String dataType){
-        try {
-            ApiResponse<T> response = client.get()
-                    .uri(uri)
-                    .retrieve()
-                    .onStatus(
-                            status -> status == HttpStatus.NOT_FOUND,
-                            clientResponse -> Mono.error(new DataNotFoundException(dataType +" not found"))
-                    )
-                    .bodyToMono(typeRef)
-                    .timeout(Duration.ofSeconds(3))
-                    .onErrorResume(e -> {
-                        logger.warn("{} not found for ID {}: {}", dataType, logId, e.getMessage());
-                        return Mono.error(e);
-                    })
-                    .block();
-            if (response == null) {
-                logger.warn("No response received for {} ID {}", dataType, logId);
-                return null;
-            }
-            return response.getData();
-
-        }catch (RuntimeException e) {
-            if (e.getCause() != null && e.getCause() instanceof java.util.concurrent.TimeoutException) {
-                logger.error("Timeout fetching {} {}: {}", dataType, logId, e.getMessage());
-                return null;
-            }
-            throw e;
-        }catch (Exception e){
-            logger.error("Unexpected error fetching {} {}: {}", dataType, logId, e.getMessage());
-            return null;
-        }
     }
 
     private UserRes mapToUserRes(User user, DepartmentDto departmentDto, AddressDto addressDto){
