@@ -12,12 +12,22 @@ This project demonstrates a microservices architecture built using Spring Boot a
 - Docker
 
 
+## Architecture Diagram
+<p align="center">
+  <img src="diagram_flow.png" alt="Architecture Diagram" width="700"/>
+</p>
+
+
 # Service-to-Service Communication
 The following interactions occur between services:
 - Service Auth  -> Service User
 - Service User  -> Sevice Department
 - Service User  -> Service Address
 - Service Task  -> Service User
+
+<p align="center">
+  <img src="service-to-service.png" alt="Architecture Diagram" width="700"/>
+</p>
 
 
 # Example: Calling a Service with Circuit Breaker & Retry (Blocking)
