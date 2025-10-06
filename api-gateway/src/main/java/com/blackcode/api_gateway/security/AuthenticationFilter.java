@@ -1,6 +1,5 @@
-package com.blackcode.api_gateway.filter;
+package com.blackcode.api_gateway.security;
 
-import com.blackcode.api_gateway.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -23,10 +22,9 @@ public class AuthenticationFilter implements GlobalFilter {
 
         String path = exchange.getRequest().getURI().getPath();
         System.out.println(path.toString());
-        if (path.startsWith("/api/auth/signup") || path.startsWith("/api/auth/signin") || path.startsWith("/api/auth/v3/api-docs")) {
-            System.out.println("===================================");
-            System.out.println("Prossess signup check : " + path.startsWith("/api/auth/signup"));
-            System.out.println("Prossess signup");
+        if (path.startsWith("/api/auth/signup") ||
+                path.startsWith("/api/auth/signin") ||
+                path.startsWith("/api/auth/v3/api-docs")) {
             return chain.filter(exchange);
         }
 

@@ -18,7 +18,6 @@ public class TokenBlacklistServiceImpl implements TokenBlacklistService {
         this.tokenBlacklistRepository = tokenBlacklistRepository;
     }
 
-
     @Override
     public void addToBlacklist(String token, String userId, LocalDateTime expiryDate) {
         TokenBlacklist tokenBlacklist = new TokenBlacklist();

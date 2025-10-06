@@ -1,4 +1,4 @@
-package com.blackcode.api_gateway;
+package com.blackcode.api_gateway.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

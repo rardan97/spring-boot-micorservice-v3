@@ -132,6 +132,8 @@ services:
 
     ports:
       - "8081:8081"
+    volumes:
+      - /c/Users/risal/.m2:/root/.m2
     networks:
       - microservices-v3
     healthcheck:
@@ -157,6 +159,8 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
     ports:
       - "8082:8082"
+    volumes:
+      - /c/Users/risal/.m2:/root/.m2
     networks:
       - microservices-v3
     healthcheck:
@@ -182,6 +186,8 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
     ports:
       - "8083:8083"
+    volumes:
+      - /c/Users/risal/.m2:/root/.m2
     networks:
       - microservices-v3
     healthcheck:
@@ -207,6 +213,8 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
     ports:
       - "8084:8082"
+    volumes:
+      - /c/Users/risal/.m2:/root/.m2
     networks:
       - microservices-v3
     healthcheck:
@@ -232,6 +240,8 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
     ports:
       - "8085:8083"
+    volumes:
+      - /c/Users/risal/.m2:/root/.m2
     networks:
       - microservices-v3
     healthcheck:
@@ -261,6 +271,8 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
     ports:
       - "8080:8080"
+    volumes:
+      - /c/Users/risal/.m2:/root/.m2
     networks:
       - microservices-v3
     healthcheck:

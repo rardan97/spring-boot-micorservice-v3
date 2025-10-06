@@ -1,4 +1,4 @@
-package com.blackcode.api_gateway.utils;
+package com.blackcode.api_gateway.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
