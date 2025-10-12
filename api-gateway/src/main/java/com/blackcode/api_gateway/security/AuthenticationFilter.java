@@ -24,7 +24,12 @@ public class AuthenticationFilter implements GlobalFilter {
         System.out.println(path.toString());
         if (path.startsWith("/api/auth/signup") ||
                 path.startsWith("/api/auth/signin") ||
-                path.startsWith("/api/auth/v3/api-docs")) {
+                path.startsWith("/api/auth/v3/api-docs") ||
+                path.startsWith("/api/user/v3/api-docs") ||
+                path.startsWith("/api/address/v3/api-docs") ||
+                path.startsWith("/api/department/v3/api-docs") ||
+                path.startsWith("/api/task/v3/api-docs") ||
+                path.startsWith("/swagger-ui")) {
             return chain.filter(exchange);
         }
 

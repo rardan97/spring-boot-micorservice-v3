@@ -73,7 +73,6 @@ release.properties
 docker-compose.override.yml
 .docker/
 **/.dockerignore
-**/Dockerfile
 volumes/
 
 # macOS
@@ -83,3 +82,5 @@ volumes/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+build.ps1
